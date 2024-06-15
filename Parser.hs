@@ -1,12 +1,13 @@
 module Parser (parseExpr, parseLiteral) where
-
 import Text.Parsec
 import Text.Parsec.String (Parser)
-import Text.Parsec.Language (emptyDef)
+import Text.Parsec.Language
 import qualified Text.Parsec.Token as Tok
 import Types
-
-lexer = Tok.makeTokenParser emptyDef
+lingDef = emptyDef {
+    Tok.reservedNames = ["in", "let", "then", "else"]
+}
+lexer = Tok.makeTokenParser lingDef
 
 identifier = Tok.identifier lexer
 reserved = Tok.reserved lexer
@@ -21,13 +22,13 @@ parseLiteral = (LitInt <$> integer) <|> (LitBool True <$ reserved "True") <|> (L
 
 -- Parsing de Expressões
 parseExpr :: Parser Expr
-parseExpr = parseVar
-         <|> parseLam
+parseExpr = parseLam
          <|> parseLet
          <|> parseIf
          <|> parseCase
          <|> parseApp
          <|> parseLit
+         <|> parseVar
          <|> parens parseExpr
 
 parseVar :: Parser Expr
