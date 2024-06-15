@@ -7,7 +7,7 @@ import Types
 
 main :: IO ()
 main = do
-    let input = "case x of { x -> 1 }"
+    let input = "case x of { x -> 1; x -> 3 }"
     case parse parseExpr "" input of
         Left err -> print err
         Right expr -> do

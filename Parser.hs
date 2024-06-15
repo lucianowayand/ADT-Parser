@@ -15,7 +15,7 @@ reservedOp = Tok.reservedOp lexer
 parens = Tok.parens lexer
 integer = Tok.integer lexer
 whiteSpace = Tok.whiteSpace lexer
-
+symbol = Tok.symbol lexer
 -- Parsing de Literais
 parseLiteral :: Parser Literal
 parseLiteral = (LitInt <$> integer) <|> (LitBool True <$ reserved "True") <|> (LitBool False <$ reserved "False")
@@ -67,8 +67,11 @@ parseCase = do
     reserved "case"
     e <- parseExpr
     reserved "of"
+    symbol "{"
     alts <- parseAlts
+    symbol "}"
     return $ Case e alts
+
 
 parseAlts :: Parser [(Pat, Expr)]
 parseAlts = parseAlt `sepBy` reservedOp ";"
