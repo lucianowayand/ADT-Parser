@@ -1,3 +1,9 @@
 dist-newstyle
 dist-newstyle/build
 dist-newstyle/cache
+dist-newstyle/cache/config
+dist-newstyle/cache/elaborated-plan
+dist-newstyle/cache/improved-plan
+dist-newstyle/cache/plan.json
+dist-newstyle/cache/solver-plan
+dist-newstyle/cache/up-to-date
