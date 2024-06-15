@@ -5,7 +5,7 @@ import Text.Parsec.Language
 import qualified Text.Parsec.Token as Tok
 import Types
 lingDef = emptyDef {
-    Tok.reservedNames = ["in", "let", "then", "else"]
+    Tok.reservedNames = ["in", "let", "then", "else", "case", "of"]
 }
 lexer = Tok.makeTokenParser lingDef
 
