@@ -1,7 +1,7 @@
 module Parser (parseExpr, parseLiteral) where
 import Text.Parsec
 import Text.Parsec.String (Parser)
-import Text.Parsec.Language as L
+import Text.Parsec.Language
 import qualified Text.Parsec.Token as Tok
 import Types
 lingDef = emptyDef {
