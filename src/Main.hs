@@ -12,5 +12,5 @@ main = do
         Left err -> print err
         Right expr -> do
             print expr
-            -- let inferredType = infer iniCont expr
-            -- print inferredType
+            let inferredType = infer iniCont expr
+            print inferredType

@@ -63,7 +63,7 @@ parseLam :: Parser Expr
 parseLam = do
   reservedOp "\\"
   x <- identifier
-  reservedOp "->"
+  reservedOp "."
   e <- parseExpr
   return (Lam x e)
 
