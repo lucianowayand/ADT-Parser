@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use <$>" #-}
 module Parser (parseExpr, parseLiteral) where
 
 import Text.Parsec
@@ -29,7 +31,15 @@ symbol = Tok.symbol lexer
 
 -- Parsing de Literais
 parseLiteral :: Parser Literal
-parseLiteral = (LitInt <$> integer) <|> (LitBool True <$ reserved "True") <|> (LitBool False <$ reserved "False")
+parseLiteral = do
+  i <- integer
+  return (LitInt i)
+  <|> do
+    reserved "True"
+    return (LitBool True)
+  <|> do
+    reserved "False"
+    return (LitBool False)
 
 -- Parsing de Expressões
 parseExpr :: Parser Expr
@@ -45,7 +55,9 @@ parseExpr =
     <|> parens parseExpr
 
 parseVar :: Parser Expr
-parseVar = Var <$> identifier
+parseVar = do
+  x <- identifier
+  return (Var x)
 
 parseLam :: Parser Expr
 parseLam = do
@@ -53,7 +65,7 @@ parseLam = do
   x <- identifier
   reservedOp "->"
   e <- parseExpr
-  return $ Lam x e
+  return (Lam x e)
 
 parseLet :: Parser Expr
 parseLet = do
@@ -63,7 +75,7 @@ parseLet = do
   e1 <- parseExpr
   reserved "in"
   e2 <- parseExpr
-  return $ Let (x, e1) e2
+  return (Let (x, e1) e2)
 
 parseIf :: Parser Expr
 parseIf = do
@@ -73,7 +85,7 @@ parseIf = do
   e2 <- parseExpr
   reserved "else"
   e3 <- parseExpr
-  return $ If e1 e2 e3
+  return (If e1 e2 e3)
 
 parseCase :: Parser Expr
 parseCase = do
@@ -83,7 +95,7 @@ parseCase = do
   symbol "{"
   alts <- parseAlts
   symbol "}"
-  return $ Case e alts
+  return (Case e alts)
 
 parseAlts :: Parser [(Pat, Expr)]
 parseAlts = parseAlt `sepBy` reservedOp ";"
@@ -99,16 +111,20 @@ parsePat :: Parser Pat
 parsePat = try parsePLit <|> try parsePVar <|> try parsePCon
 
 parsePVar :: Parser Pat
-parsePVar = PVar <$> identifier
+parsePVar = do
+  x <- identifier
+  return (PVar x)
 
 parsePLit :: Parser Pat
-parsePLit = PLit <$> parseLiteral
+parsePLit = do
+  l <- parseLiteral
+  return (PLit l)
 
 parsePCon :: Parser Pat
 parsePCon = do
   con <- identifier
   pats <- many parsePat
-  return $ PCon con pats
+  return (PCon con pats)
 
 -- Parsing de Tuplas
 parseTuple :: Parser Expr
@@ -118,19 +134,21 @@ parseTuple = do
   symbol ","
   e2 <- parseExpr
   symbol ")"
-  return $ Tuple e1 e2
+  return (Tuple e1 e2)
 
 parseApp :: Parser Expr
 parseApp = do
   es <- many1 parseTerm
-  return $ foldl1 App es
+  return (foldl1 App es)
 
 parseTerm :: Parser Expr
-parseTerm =
+parseTerm = do
   try parseVar
     <|> try parseLit
     <|> try parseTuple
     <|> parens parseExpr
 
 parseLit :: Parser Expr
-parseLit = Lit <$> parseLiteral
+parseLit = do
+  l <- parseLiteral
+  return (Lit l)
