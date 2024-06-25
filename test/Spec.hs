@@ -30,6 +30,9 @@ main = hspec $ do
     it "parses a parens expression" $ do
       parse parseExpr "" "(x)" `shouldBe` Right (Var "x")
 
+    it "parses a cons" $ do
+      parse parseExpr "" "Constructor a" `shouldBe` Right (Cons "Constructor")
+
     it "parses a literal integer" $ do
       parse parseExpr "" "1" `shouldBe` Right (Lit (LitInt 1))
 

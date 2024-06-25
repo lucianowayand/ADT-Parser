@@ -7,6 +7,7 @@ import Text.Parsec.Language
 import Text.Parsec.String (Parser)
 import qualified Text.Parsec.Token as Tok
 import Types
+import Data.Char (isUpper, isLower)
 
 lingDef =
   emptyDef
@@ -51,13 +52,23 @@ parseExpr =
     <|> try parseApp
     <|> try parseTuple
     <|> try parseLit
-    <|> try parseVar
+    <|> try parseCons
+    <|> parseVar
     <|> parens parseExpr
+
+parseCons :: Parser Expr
+parseCons = do
+  x <- identifier
+  if (not . null) x && isUpper (head x)
+    then return (Cons x)
+    else parserFail "Expected a constructor"
 
 parseVar :: Parser Expr
 parseVar = do
   x <- identifier
-  return (Var x)
+  if (not . null) x && isLower (head x)
+    then return (Var x)
+    else parserFail "Expected a variable"
 
 parseLam :: Parser Expr
 parseLam = do
