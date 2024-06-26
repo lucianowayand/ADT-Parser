@@ -13,7 +13,6 @@ data Expr = Var Id
           | Case Expr [(Pat, Expr)]
           | Let (Id, Expr) Expr
           | Tuple Expr Expr
-          | Cons Id
           deriving (Eq, Show)
 
 data Pat = PVar Id

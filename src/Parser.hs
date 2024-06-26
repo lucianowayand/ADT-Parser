@@ -60,7 +60,7 @@ parseCons :: Parser Expr
 parseCons = do
   x <- identifier
   if (not . null) x && isUpper (head x)
-    then return (Cons x)
+    then return (Const x)
     else parserFail "Expected a constructor"
 
 parseVar :: Parser Expr
