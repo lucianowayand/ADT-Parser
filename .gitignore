@@ -7,3 +7,7 @@ dist-newstyle/cache/improved-plan
 dist-newstyle/cache/plan.json
 dist-newstyle/cache/solver-plan
 dist-newstyle/cache/up-to-date
+cabal
+main
+*.hi
+*.o
