@@ -9,6 +9,7 @@ import qualified Text.Parsec.Token as Tok
 import Data.Char (isUpper, isLower)
 import Control.Monad (mapAndUnzipM)
 import Data.Maybe (fromJust)
+import Data.List ((\\), nub)
 
 lingDef =
   emptyDef
@@ -67,6 +68,11 @@ inst ts (TArr l r) = TArr (inst ts l) (inst ts r)
 inst ts (TGen i)  = ts !! i
 inst ts t         = t
 
+closure :: [Assump] -> SimpleType -> Subst
+closure g t = gen ids t
+  where
+    ids = tv t \\ tv g
+    gen ids t = zipWith (\i n -> (i, TGen n)) ids [0..]
 
 tiExpr :: [Assump] -> Expr -> TI (SimpleType, Subst)
 tiExpr g (Var i) = do{t <- tiContext g i; return (t, [])}
@@ -90,7 +96,10 @@ tiExpr g (If cond e1 e2) = do
     return (apply s5 t1, s5 @@ s4 @@ s3 @@ s2 @@ s1)
 tiExpr g (Let (i, e1) e2) = do
     (t1, s1) <- tiExpr g e1
-    (t2, s2) <- tiExpr (apply s1 (g /+/ [i :>: t1])) e2
+    let newg = apply s1 g
+    let st = closure newg t1
+    let t1' = apply st t1
+    (t2, s2) <- tiExpr (newg /+/ [i :>: t1']) e2
     return (t2, s2 @@ s1)
 tiExpr g (Case e alts) = do
     (t, s) <- tiExpr g e
