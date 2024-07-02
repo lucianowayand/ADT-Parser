@@ -28,11 +28,13 @@ parens = Tok.parens lexer
 
 integer = Tok.integer lexer
 
+charLiteral = Tok.charLiteral
+
 whiteSpace = Tok.whiteSpace lexer
 
 symbol = Tok.symbol lexer
 
-data Literal = LitInt Integer | LitBool Bool deriving (Eq, Show)
+data Literal = LitInt Integer | LitBool Bool | LitChar Char deriving (Eq, Show)
 
 data Pat = PVar Id
          | PLit Literal
@@ -86,6 +88,7 @@ tiExpr g (Lam i e) = do b <- freshVar
                         return (apply s (b --> t), s)
 tiExpr g (Lit (LitInt i)) = return (TCon "Int", [])
 tiExpr g (Lit (LitBool i)) = return (TCon "Bool", [])
+tiExpr g (Lit (LitChar i)) = return (TCon "Char", [])
 tiExpr g (Cons c) = do{t <- tiContext g c; return (t, [])}
 tiExpr g (If cond e1 e2) = do
     (tCond, s1) <- tiExpr g cond
@@ -122,6 +125,7 @@ tiPat (PVar i) = do
     v <- freshVar
     return ([i :>: v], [])
 tiPat (PLit (LitInt _)) = return ([], [])
+tiPat (PLit (LitChar _)) = return ([], [])
 tiPat (PLit (LitBool _)) = return ([], [])
 tiPat (PCon c ps) = do
     v <- freshVar
@@ -160,6 +164,7 @@ parseLiteral = do
   <|> do
     reserved "False"
     return (LitBool False)
+  <|> (LitChar <$> (charLiteral lexer)) 
 
 --parseLit :: Parser Expr
 parseLit = do
